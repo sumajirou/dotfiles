@@ -1,0 +1,8 @@
+[user]
+	name = sumajirou
+	email = email@example.com
+[core]
+	editor = vi
+[ghq]
+	root = ~/go/1.15.0/src
+	root = ~/ghq
