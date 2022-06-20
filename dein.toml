@@ -1,0 +1,80 @@
+# hookは5種類あるよ
+# hook_add（プラグインが追加された時）
+# hook_source（プラグイン読み込み直前）
+# hook_post_source（プラグイン読み込み直後）
+# hook_post_update（各プラグインのインストール直後）
+# hook_done_update（全てのプラグインのインストール直後）
+
+# プラグイン固有の設定はできるだけtomlに書く
+# キーマッピングはinit.vimにまとめる。
+# colorscheme系のプラグインは設定のタイミングが難しいので、tomlではダウンロードのみ行い設定はinit.vimに書く。
+
+[[plugins]] # 日本語のヘルプ
+repo = 'vim-jp/vimdoc-ja'
+
+[[plugins]] # カーソル位置のコンテキストのftを判定するライブラリ
+repo = 'Shougo/context_filetype.vim'
+[[plugins]] # カーソル位置のコンテキストに合わせてftを切り替える
+repo = 'osyo-manga/vim-precious'
+depends = ['context_filetype.vim']
+hook_add = '''
+  " NORMALモードのカーソル移動中に頻繁に切り替わるとうざいのでデフォは無効化しておく(helpは例外)
+  let g:precious_enable_switch_CursorMoved = { '*': 0, 'help': 1 }
+  " INSERTモードのON/OFFに合わせてトグル
+  autocmd MyAutoCmd InsertEnter * :PreciousSwitch
+  autocmd MyAutoCmd InsertLeave * :PreciousReset
+'''
+[[plugins]] # toml syntax
+repo = 'cespare/vim-toml'
+on_ft = 'toml'
+
+[[plugins]] # fzf.vim
+# fzf本体も一緒にいれる
+repo = 'junegunn/fzf'
+# binだけでいいはず
+build = './install --bin'
+# (dein.vim merge plugins into a single directory in default, so you may need explicit 'merged': 0 in setting dictionary.)
+merged = '0'
+[[plugins]] # fzf.vim
+repo = 'junegunn/fzf.vim'
+depends = 'fzf'
+hook_add = '''
+  " fzf settings
+  let $FZF_DEFAULT_OPTS="--layout=reverse"
+  let $FZF_DEFAULT_COMMAND="rg --files --hidden --glob '!.git/**'"
+  let g:fzf_layout = {'up':'~90%', 'window': { 'width': 0.8, 'height': 0.8,'yoffset':0.5,'xoffset': 0.5, 'border': 'sharp' } }
+'''
+# hook_add = '''
+#   command! -bang -nargs=* Rg
+#     \ call fzf#vim#grep(
+#     \   'rg --line-number --no-heading '.shellescape(<q-args>), 0,
+#     \   fzf#vim#with_preview({'options': '--exact --reverse'}, 'right:50%:wrap'))
+# '''
+
+[[plugins]] # コメントアウトのトグル
+repo = 'tyru/caw.vim'
+hook_add = '''
+  " デフォルトのキーマッピングをオフに
+  let g:caw_no_default_keymappings = 1
+'''
+
+[[plugins]] # カラースキーマ
+repo = 'w0ng/vim-hybrid'
+[[plugins]] # ステータスラインを豪華に
+repo = 'vim-airline/vim-airline'
+hoot_add = '''
+  " Powerline Fontsを利用
+  let g:airline_powerline_fonts = 1
+  " タブラインを表示
+  let g:airline#extensions#tabline#enabled = 1
+'''
+[[plugins]]
+repo ='vim-airline/vim-airline-themes'
+depends = 'vim-airline-themes'
+[[plugins]]
+repo ='ryanoasis/vim-devicons'
+
+[[plugins]] #プログラムの簡易実行
+repo ='thinca/vim-quickrun'
+
+
