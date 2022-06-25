@@ -1,50 +1,80 @@
-# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
-# Initialization code that may require console input (password prompts, [y/n]
-# confirmations, etc.) must go above this block; everything else may go below.
+# p10kのインスタントプロンプト機能の有効化(.zshrcの先頭に書きましょう)
+# Zshを起動すると即座にプロンプトが表示されプラグインがロードされている間に入力を開始することができる。
+# コンソールからの入力を必要とする初期化コード(パスワードプロンプトや[y/n]確認など)はこのブロックの上に置く必要がある。
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
     source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-#
-# Executes commands at the start of an interactive session.
-#
-# Authors:
-#   Sorin Ionescu <sorin.ionescu@gmail.com>
-#
-
-# Source Prezto.
+# Preztoのロード .zpreztoはここで読み込まれる
 if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
     source "${ZDOTDIR:-$HOME}/.zprezto/init.zsh"
 fi
 
-# Customize to your needs...
-# prezto default settings end here.
-
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-# [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+# p10kのロード
+# `p10k configure`か${ZDOTDIR}/.p10k.zshを編集することでプロンプトをカスタマイズできる
 if [[ -s "${ZDOTDIR:-$HOME}/.p10k.zsh" ]]; then
     source "${ZDOTDIR:-$HOME}/.p10k.zsh"
 fi
 
 
-# preztoの個人設定(.zpreztorc)はinit.zshで読み込み済み
+
+# zsh設定メモ
+#
+# 設定ファイルの読み込み順
+# ログインシェルの場合
+# 1.  /etc/zshenv
+# 2.  ${ZDOTDIR:-$HOME}/.zshenv
+# 3.  /etc/zprofile
+# 4.  ${ZDOTDIR:-$HOME}/.zprofile
+# 5.  /etc/zshrc
+# 6.  ${ZDOTDIR:-$HOME}/.zshrc
+# 7.  ${ZDOTDIR:-$HOME}/.zpreztorc (正確には.zshrcの中のpreztoのinitの中で読み込まれる)
+# 8.  /etc/zlogin
+# 9.  ${ZDOTDIR:-$HOME}/.zlogin
+# 10. ${ZDOTDIR:-$HOME}/.zlogout
+# 11. /etc/zlogout
+#
+# インタラクティブシェルの場合（iterm2上でbashやzshと打った場合）
+# 1.  /etc/zshenv
+# 2.  ~/.zshenv
+# 3.  /etc/zshrc
+# 4.  ~/.zshrc
+#
+# シェルスクリプト実行の場合
+# 1.  /etc/zshenv
+# 2.  ~/.zshenv
+#
+# zshenvは全てのインスタンスで使用されるためできるだけ小さく保つ。環境変数のみを定義する。
+# zprofileはzloginと似ているが、zshrcの前に読み込まれる。
+# zloginはログイン時のみ実行される。zshrcの後に読み込まれる。設定を変えるのには使わず、メッセージの出力やファイルの作成に使う
+# zlogoutはログアウト時に実行される。メッセージの出力やファイルの削除に使う。
+
+
 
 ################################################################################
 # PATH
 ################################################################################
+# 自作のスクリプトや拾ったスクリプトを置く場所
+export PATH="$HOME/bin:$PATH"
+
+# zsh補完ファイル置き場をfpathに追加
+[ ! -e "${ZDOTDIR}/completions" ] && mkdir -p "${ZDOTDIR}/completions"
+fpath=( "${ZDOTDIR}/completions" "${fpath[@]}" )
+
+
 # for brew config
 if which "/opt/homebrew/bin/brew" >/dev/null 2>&1 ; then
     eval "$(/opt/homebrew/bin/brew shellenv)"
 else
     eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 fi
+# 補完ファイルの読み込み brewでインストールしたコマンドで対応しているものの補完が有効になる
+fpath=( "$(brew --prefix)/share/zsh/site-functions" "${fpath[@]}" )
 
-# for WSL2 config
-# WSL2 Dockerに関して少し注意を要する。 WSL2ではWindows版のDockerを使うため，パスを通す必要がある。
-# さらにcmd.exeがPATHに含まれていないといけない．環境構築時に下記コマンドを一度だけ実行する． この事情はこのファイルでなく環境構築用のスクリプトに書くべきことだがまだそれが存在しないのでここにメモしておく．
-#
+# for WSL2 docker config
 if [[ "$(uname -r)" == *microsoft* ]]; then
-    export PATH="$PATH:/mnt/c/Program Files/Docker/Docker/resources/bin:/mnt/c/ProgramData/DockerDesktop/version-bin"
+    # export PATH="$PATH:/mnt/c/Program Files/Docker/Docker/resources/bin:/mnt/c/ProgramData/DockerDesktop/version-bin"
+    export PATH="$PATH:/mnt/c/Program Files/Docker/Docker/resources/bin"
     if [ ! -e /usr/local/bin/cmd.exe ]; then
         ln -s /mnt/c/Windows/System32/cmd.exe /usr/local/bin/cmd.exe
     fi
@@ -55,8 +85,18 @@ export ASDF_CONFIG_FILE="$XDG_CONFIG_HOME/asdf/.asdfrc"
 export ASDF_DATA_DIR="$XDG_DATA_HOME/asdf"
 . "$(brew --prefix asdf)/libexec/asdf.sh"
 
-# 自作のスクリプトや拾ったスクリプトを置く場所
-export PATH="$HOME/bin:$PATH"
+# for deno
+if [ ! -s "${ZDOTDIR}/completions/_deno" ]; then
+    deno completions zsh >! "${ZDOTDIR}/completions/_deno"
+fi
+
+
+# 補完ファイルの読み込み
+autoload -Uz compinit && compinit
+
+
+
+
 
 ###############################################################################
 # alias
@@ -70,6 +110,7 @@ alias lls='ll -s size'
 alias llt='ll -s modified'
 alias lle='ll -s extension'
 alias lll='ll -ghHiS'
+alias tree='ll --tree'
 
 # 環境変数PATHを整形して表示
 alias printpath='printenv PATH | tr : \\n'
@@ -78,6 +119,9 @@ alias relogin='exec -l $SHELL'
 # neovim
 alias vi='nvim'
 alias vim='nvim'
+
+# vimdiff
+alias vimdiff='nvim -d'
 
 ###############################################################################
 # fzf
@@ -213,9 +257,10 @@ alias jlang='docker run -it --rm nesachirou/jlang'
 alias ip='ip -color=auto'
 
 ###############################################################################
-#
+# その他
 ###############################################################################
-
+# tldr
+# . "/opt/homebrew/Cellar/tldr/1.4.3/share/zsh/site-functions/_tldr"
 ###############################################################################
 # 便利
 ###############################################################################

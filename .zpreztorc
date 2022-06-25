@@ -1,46 +1,94 @@
-# デフォルトの設定コメントアウトはすべて削除した
 # Color output (auto set to 'no' on dumb terminals).
 zstyle ':prezto:*:*' color 'yes'
 
 # Set the Prezto modules to load (browse modules).
 # The order matters.
-zstyle ':prezto:load' pmodule \
-  'environment' \
-  'terminal' \
-  'editor' \
-  'history' \
-  'directory' \
-  'spectrum' \
-  'utility' \
-  'completion' \
-  'history-substring-search' \
-  'autosuggestions' \
-  'syntax-highlighting' \
-  'prompt' # promptが最後じゃないとダメ
-# Set the query found color.
-# zstyle ':prezto:module:autosuggestions:color' found ''
+# syntax-highlighting, history-substring-search, autosuggestions. はこの順でなければならない。(https://github.com/sorin-ionescu/prezto/tree/master/modules/autosuggestions)
+# utility, completionもこの順番
+# promptが最後じゃないとダメ
 
+# 導入中のモジュール
+# 'environment'              # 一般的なシェルオプションを設定し、環境変数を定義する。このモジュールは最初にロードする必要があります。
+# 'terminal'                 # ターミナルウィンドウとタブのタイトルを設定します。
+# 'editor'                   # エディタ固有のキーバインドオプションと変数を設定します。
+# 'history'                  # ヒストリーのオプションを設定し、ヒストリーのエイリアスを定義します。
+# 'directory'                # ディレクトリのオプションを設定し、ディレクトリ・エイリアスを定義します。フォルダ名だけでcdしたり、>リダイレクトの際ファイルの上書きを禁ずる。(>!を使えば上書きできる。)
+# 'spectrum'                 # 256色やエフェクトをより使いやすくするための機能を提供します。(http://lucentbeing.com/writing/archives/a-guide-to-256-color-codes/)
+# 'utility'                  # 一般的なエイリアスや関数を定義する
+# 'completion'               # TAB 補完をロードして構成し、zsh-completions プロジェクトから追加の補完を提供します。utility および補完定義を提供する他のすべてのモジュールの後にロードする必要があります。
+# 'syntax-highlighting'      # Fishライクなコマンドハイライト機能
+# 'history-substring-search' # Fishライクな履歴検索機能。履歴から任意のコマンドの一部を入力し、↑や↓などの選択したキーを押すことで、マッチしたコマンドを循環させることができるのです。
+# 'autosuggestions'          # Fishライクなコマンドサジェスト機能。履歴と補完からサジェストする。カーソルキーの右で一行決定。forward-wordウィジェット(Alt+→やAlt+F)で一単語だけ決定。
+# 'prompt'                   # プロンプトのテーマ
+
+# モジュールのロード
+zstyle ':prezto:load' pmodule 'environment' 'terminal' 'editor' 'history' 'directory' 'spectrum' 'utility' 'completion' 'syntax-highlighting' 'history-substring-search' 'autosuggestions' 'prompt'
+
+
+
+####################################################################################################
+# environment
+####################################################################################################
+
+####################################################################################################
+# terminal
+####################################################################################################
+
+####################################################################################################
+# editor
+####################################################################################################
 # Set the key mapping style to 'emacs' or 'vi'.
 zstyle ':prezto:module:editor' key-bindings 'emacs'
+# ...を../..に変換する
+zstyle ':prezto:module:editor' dot-expansion 'yes'
 
+####################################################################################################
+# history
+####################################################################################################
 
-# Set the prompt theme to load.
-# Setting it to 'random' loads a random theme.
-# Auto set to 'off' on dumb terminals.
+####################################################################################################
+# directory
+####################################################################################################
+
+####################################################################################################
+# spectrum
+####################################################################################################
+
+####################################################################################################
+# utility
+####################################################################################################
+# rmとかmvの前に確認する(rm -i)
+zstyle ':prezto:module:utility' safe-ops 'yes'
+
+####################################################################################################
+# completion
+####################################################################################################
+
+####################################################################################################
+# syntax-highlighting
+####################################################################################################
+# ハイライタ関数でハイライト対象を選択できる。とりあえず全部盛り。
+zstyle ':prezto:module:syntax-highlighting' highlighters 'main' 'brackets' 'pattern' 'regexp' 'cursor' 'root' 'line'
+
+####################################################################################################
+# history-substring-search
+####################################################################################################
+# 履歴中のクエリの色
+zstyle ':prezto:module:history-substring-search:color' found 'bg=red'
+# 見つからなかった時のクエリの色
+zstyle ':prezto:module:history-substring-search:color' not-found ''
+
+####################################################################################################
+# autosuggestions
+####################################################################################################
+# クエリの色
+zstyle ':prezto:module:autosuggestions:color' found 'fg=blue'
+
+####################################################################################################
+# prompt
+####################################################################################################
+# テーマの選択
 zstyle ':prezto:module:prompt' theme 'powerlevel10k'
+# プロンプトのpwdを短縮しない
+zstyle ':prezto:module:prompt' pwd-length 'long'
 
-# Enabled safe options. This aliases cp, ln, mv and rm so that they prompt
-# before deleting or overwriting files. Set to 'no' to disable this safer
-# behavior.
-# zstyle ':prezto:module:utility' safe-ops 'yes'
-
-
-# syntax-hilighting
-zstyle ':prezto:module:syntax-highlighting' color 'yes'
-zstyle ':prezto:module:syntax-highlighting' highlighters \
-  'main' \
-  'brackets' \
-  'pattern' \
-  'line' \
-  'cursor' \
-  'root'

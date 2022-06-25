@@ -1,11 +1,12 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
-set -eu
+# -e パイプやサブシェルで実行したコマンドが1つでもエラーになったら直ちにシェルを終了する
+# -u パラメーター展開中に、設定していない変数があったらエラーとする（特殊パラメーターである「@」と「*」は除く）
+# -x トレース情報として、シェルが実行したコマンドとその引数を出力する。情報の先頭にはシェル変数PS4の値を使用
+# -C リダイレクトで既存のファイルを上書きしない
+set -euxC
 
-# dotfilesディレクトリの場所を、変数DOTFILES_DIRに教える
-DOTFILES_DIR=$(cd $(dirname $0); pwd)
-# dotfilesディレクトリに移動する
-cd $DOTFILES_DIR
+DOTFILES_DIR=$(dirname $(readlink -f $0))
 
 # brew の同期
 brew bundle

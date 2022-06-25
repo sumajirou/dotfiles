@@ -78,4 +78,7 @@ repo ='ryanoasis/vim-devicons'
 [[plugins]] #プログラムの簡易実行
 repo ='thinca/vim-quickrun'
 
+[[plugins]] # bdeleteを改善
+repo ='mhinz/vim-sayonara'
+
 

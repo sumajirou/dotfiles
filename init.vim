@@ -181,9 +181,10 @@ nnoremap <Leader>v :e $MYVIMRC<CR>
 nnoremap <Leader>q :q<CR>
 " 上書き保存
 nnoremap <Leader>w :update<CR>
-" バッファの移動・削除
+" バッファの移動
 nnoremap <Tab>  :bn<CR>
-nnoremap <Leader>d :bd<CR>
+" バッファの削除(vim-sayonaraプラグイン)
+nnoremap <Leader>d :Sayonara!<CR>
 " 一括インデント
 nnoremap <Leader>i migg=G`i
 
